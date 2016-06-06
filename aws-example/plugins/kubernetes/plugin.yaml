@@ -169,19 +169,6 @@ workflows:
         description: json overrides
         default: ''
 
-  kube_stop:
-    mapping: kubernetes.kube_plugin.workflows.kube_stop
-    parameters:
-      master:
-        description: name of master node
-      name:
-        description: name of the resource to stop
-      resource:
-        description: type of the resource to be stopped
-      all:
-        description: stop all
-        default: False
-  
   kube_delete:
     mapping: kubernetes.kube_plugin.workflows.kube_delete
     parameters:
@@ -194,4 +181,3 @@ workflows:
       all:
         description: stop all
         default: False
-      

@@ -24,18 +24,7 @@ def kube_expose(**kwargs):
   runstr="./kubectl -s http://localhost:8080 expose {} {} {}".format(kwargs['resource'],kwargs['name'],optstr)
   ctx.logger.info("Running: {}".format(runstr))
   run(runstr)
-  
-#
-# Stop a resource (by name)
-#
-@workflow
-def kube_stop(**kwargs):
-  setfabenv(kwargs)
-  optstr=buildopts(kwargs,{},{},["all"],['name','master','resource'])
-  runstr="./kubectl -s http://localhost:8080 stop {} {} {}".format(kwargs['resource'],kwargs['name'],optstr)
-  ctx.logger.info("Running: {}".format(runstr))
-  run(runstr)
-  
+
 #
 # Delete a resource (by name)
 #
