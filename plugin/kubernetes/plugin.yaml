@@ -1,7 +1,7 @@
 plugins:
   kubernetes:
     executor: host_agent
-    source: <ADD SOURCE LOCATION>
+    source: kubernetes
 
 node_types:
   cloudify.kubernetes.Base:
@@ -17,7 +17,7 @@ node_types:
         description: ssh password when not using passwordless operation
         default: ''
       ssh_port:
-        description: ssh port.  defaults to 22
+        description: ssh port
         default: 22
       install_docker:
         description: install docker
@@ -39,7 +39,8 @@ node_types:
         default: 8080
     interfaces:
       cloudify.interfaces.lifecycle:
-        start: kubernetes.kube_plugin.start-master-ubuntu14.start_master
+        start: 
+          implementation: kubernetes.kube_plugin.start_master_ubuntu14.start_master
 
   ##########################################
   # Represents a minion/node
@@ -48,7 +49,8 @@ node_types:
     derived_from: cloudify.kubernetes.Base
     interfaces:
       cloudify.interfaces.lifecycle:
-        start: kubernetes.kube_plugin.start-node-ubuntu14.start_node
+        start: 
+          implementation: kubernetes.kube_plugin.start_node_ubuntu14.start_node
     
   ##########################################
   # Represents a kubernetes service
@@ -166,6 +168,17 @@ workflows:
       overrides:
         description: json overrides
         default: ''
+
+  kube_scale:
+    mapping: kubernetes.kube_plugin.workflows.kube_scale
+    parameters:
+      master:
+        description: name of master node
+      name:
+        description: name of the resource to scale
+      replicas:
+        description: number of replicas to scale to
+        default: 1
 
   kube_delete:
     mapping: kubernetes.kube_plugin.workflows.kube_delete

@@ -26,9 +26,9 @@ def start_node(**kwargs):
 
   subprocess.call("sudo apt-get update",shell=True)
 
-  if(ctx.node.properties['install_docker']):
-    get_docker(ctx)
-  
+  get_docker(ctx)
+
+  # get master ip and port from blueprint
   master_ip=ctx.instance.runtime_properties['master_ip']
   master_port=ctx.instance.runtime_properties['master_port']
 
@@ -41,8 +41,7 @@ def start_node(**kwargs):
   
   os.system("sudo service docker stop")
   
-  #run flannel
-  
+  # run flannel
   pipe=subprocess.Popen(['sudo','docker','-H','unix:///var/run/docker-bootstrap.sock','run','-d','--net=host','--privileged','-v','/dev/net:/dev/net','quay.io/coreos/flannel:0.5.3','/opt/bin/flanneld','--etcd-endpoints=http://{}:4001'.format(master_ip)],stderr=open('/dev/null'),stdout=subprocess.PIPE)
 
   # get container id
@@ -65,7 +64,7 @@ def start_node(**kwargs):
   os.system("sudo service docker start")
   
   # run the kubelet
-  subprocess.call("sudo docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  gcr.io/google_containers/hyperkube:v1.0.1 /hyperkube kubelet --api-servers=http://{}:{} --v=2 --address=0.0.0.0 --enable-server --hostname-override={} --cluster-dns=10.0.0.10 --cluster-domain=cluster.local".format(master_ip,master_port,get_ip_address('eth0')),shell=True)
+  subprocess.call("sudo docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  gcr.io/google_containers/hyperkube:v1.0.1 /hyperkube kubelet --api-servers=http://{}:{} --v=2 --address=0.0.0.0 --enable-server --cluster-dns=10.0.0.10 --cluster-domain=cluster.local".format(master_ip,master_port),shell=True)
   
   # run the proxy
   subprocess.call("sudo docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.0.1 /hyperkube proxy --master=http://{}:{} --v=2".format(master_ip,master_port),shell=True)
