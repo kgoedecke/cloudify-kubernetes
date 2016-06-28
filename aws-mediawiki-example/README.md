@@ -63,3 +63,57 @@ Afterwards the commandline tool should output the IP address of the management V
 bootstrapping complete
 management server is up at 52.204.213.123
 ```
+
+### Package the blueprint file
+
+Clone the git repository into a folder of your choice.
+```shell
+git clone https://github.com/kgoedecke/cloudify-kubernetes
+```
+
+Afterwards cd into the `aws-mediawiki-example` folder. 
+```shell
+cd aws-mediawiki-example/
+```
+
+Before you package the blueprint with `tar` make, run the following command to disable copyfile:
+```shell
+export COPYFILE_DISABLE=true
+```
+
+Now go ahead and `tar` the MediaWiki example blueprint:
+```shell
+tar -czf blueprint-kubernetes-mediawiki.tar.gz aws-mediawiki-example 
+```
+
+### Upload the blueprint
+
+Open the Cloudify Dashboard and select the Blueprint tab. Select the "Upload Blueprint" button and a dialog will open that requires you to enter the blueprint archive and some details. Select the just created archive and enter a blueprint name as well as `aws-blueprint.yaml` as the blueprint filename. The package contains everything that's needed to run the example (including the kubernetes plugin).
+
+<img width="932" alt="screenshot1" src="https://cloud.githubusercontent.com/assets/5519740/16435659/f1034838-3d97-11e6-8649-8dd9209d05b8.png">
+
+After the blueprint has been uploaded you'll see a graph of the topology.
+
+<img width="758" alt="screenshot2" src="https://cloud.githubusercontent.com/assets/5519740/16435743/70a4079e-3d98-11e6-8a71-f97a18718372.png">
+
+### Creating the deployment
+
+Click on "Create Deployment" and the following dialog will open:
+
+<img width="757" alt="screenshot3" src="https://cloud.githubusercontent.com/assets/5519740/16435770/a43867bc-3d98-11e6-9c69-0313a63be131.png">
+
+The `agent_user` needs to the match the operating system that will run on the separate nodes. So make sure the image that you specify with `image`. In this example an Ubuntu image was used, so the default ssh user is ubuntu. Additionally a root password for the MySQL database is required as well as the instance type that will be used to deploy the nodes on.
+
+This will trigger the actual installation of the plugin on the management VM.
+
+After the workflow has been executed successfully a message should show up like in the screenshot below:
+
+<img width="892" alt="screenshot4" src="https://cloud.githubusercontent.com/assets/5519740/16435994/99f3e0d6-3d9a-11e6-8584-495645e48f3b.png">
+
+Afterwards the installation and deployment of the application itself needs to be done. Select "Execute Workflow" and click on "Install".
+
+<img width="329" alt="screenshot5" src="https://cloud.githubusercontent.com/assets/5519740/16436035/d9ad5e0a-3d9a-11e6-912c-c65a1b5f092f.png">
+
+The process will also take a while and you'll receive continous updates, which will let you know if any errors occured during the install workflow.
+
+After the successful exection you should be able to access the MediaWiki on port 8001 of the kubernetes Master Node.
