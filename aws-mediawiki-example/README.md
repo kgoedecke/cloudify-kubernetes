@@ -117,4 +117,37 @@ Afterwards the installation and deployment of the application itself needs to be
 
 The process will also take a while and you'll receive continous updates, which will let you know if any errors occured during the install workflow.
 
-After the successful exection you should be able to access the MediaWiki on port 8001 of the kubernetes Master Node.
+<img width="1019" alt="screenshot6" src="https://cloud.githubusercontent.com/assets/5519740/16454831/860790c2-3e12-11e6-95dc-c69436dbd35f.png">
+
+
+After the successful exection you should be able to access the MediaWiki on port `8001` of the kubernetes Master Node, which you can find in your AWS Dashboard.
+
+### Scaling 
+
+With the current setup there are two possibilities to scale the applications components. You can either scale up/down a Cloudify host or a kubernetes node through kubernetes. 
+
+To enable the scaling of a Cloudify node the "scale" workflow can be used. In our case the Cloudify native node is the MySQL host.
+
+#### Scaling the MySQL host
+In the "Deployments" tab select "Execute Workflow" and the following dialog will show up:
+
+<img width="317" alt="screenshot7" src="https://cloud.githubusercontent.com/assets/5519740/16455393/6d9904d8-3e14-11e6-83ea-848029d58b82.png">
+
+Select the "scale" workflow. The delta value represents the difference to the current value, so for example delta = 1 will scale the node up one node, -1 will scale down one node. As "node_id" type in `mysqld_host` as we want to scale up the MySQL host node and as this is a compute node set "scale_compute" to true.
+
+After confirming the execution Cloudify should provision an other node and add it to the Dashboard topology overview. 
+
+<img width="803" alt="screenshot8" src="https://cloud.githubusercontent.com/assets/5519740/16455601/39a965e0-3e15-11e6-96ad-89e142801aca.png">
+
+You will also see that additional nodes have been provisioned in the AWS dashboard. The Cloudify loadbalancer will automatically split the load between the different nodes.
+
+#### Scaling a kubernetes node
+
+In order to scale the kubernetes node up or down open the "Deployments" tab again and select "Execute Workflow". The dialog will require you to enter the following information:
+- master: The name of the kubernetes master node (here `master_host`, can be found in the deployment topology diagram)
+- name: The name of the service that you want to scale (here `mediawiki`, this is specified in the `service.yaml` file)
+- replicas: The number of replicas that you want to scale to
+
+Internally Cloudify will run `kubectl -s http://localhost:8080 scale` to scale the passed service.
+
+The rest will happen in a fully automated way and the changes can be verified using the kubernetes API for example.
