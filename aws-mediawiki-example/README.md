@@ -44,6 +44,7 @@ Now open `aws-ec2-manager-blueprint-inputs.yaml` and fill in the following field
 - `image_id: 'ami-6d1c2007'` The AMI Image that will be used for the Management VM, I recommend CentOS Linux 7 x86_64 (ami-6d1c2007)
 - `instance_type: 'm3.medium'` The instance type that will be used for the Management VM
 - `ssh_user: 'centos'` This needs to be set to the SSH user that matches the OS (Image)
+- `agent_user: 'ubuntu'` This needs to be set to the SSH user that matches the OS (Image) on the agent hosts.
 - `ec2_region_name: 'us-east-1'` The EC2 region that you wan't to deploy the management VM to
 
 Save and close the file. 
